@@ -87,6 +87,7 @@ def main():
     parser.add_argument("--with_spi", action="store_true", help="Enable spi (Arty target only)")
     parser.add_argument("--with_i2c", action="store_true", help="Enable i2c (Arty target only)")
     parser.add_argument("--with_pwm", action="store_true", help="Enable pwm (Arty target only)")
+    parser.add_argument("--with-spi-flash", action="store_true", help="Enable flash support for executing Zephyr from it (XIP)")
     parser.add_argument("--spi-data-width", type=int, default=8,      help="SPI data width (maximum transfered bits per xfer, Arty target only)")
     parser.add_argument("--spi-clk-freq",   type=int, default=1e6,    help="SPI clock frequency (Arty target only)")
     parser.add_argument("--with_mmcm", action="store_true", help="Enable mmcm (Arty target only)")
@@ -111,6 +112,8 @@ def main():
         soc_kwargs.update(variant=args.variant)
     if args.sys_clk_freq is not None:
         soc_kwargs.update(sys_clk_freq=int(float(args.sys_clk_freq)))
+    if args.with_spi_flash is not None:
+        soc_kwargs.update(with_spi_flash=args.with_spi_flash)
 
     for board_name in board_names:
         if board_name not in supported_boards:
