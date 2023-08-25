@@ -140,6 +140,10 @@ def main():
                     soc.add_mmcm(board.mmcm_freq)
                 soc.add_i2s()
 
+        if board_name == "lattice_crosslink_nx_evn":
+            if args.with_i2c:
+                soc.add_i2c()
+
         build_dir = os.path.join("build", board.bitstream_name)
 
         if args.build:
