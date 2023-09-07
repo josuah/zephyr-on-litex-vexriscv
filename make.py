@@ -6,6 +6,7 @@ import os
 from litex.build.sim.config import SimConfig
 from litex.build.xilinx.vivado import vivado_build_args, vivado_build_argdict
 from litex.build.lattice.oxide import oxide_argdict, oxide_args
+from litex.build.export.platform import export_args
 from litex.soc.integration.builder import *
 
 from soc_zephyr import SoCZephyr
@@ -101,7 +102,7 @@ class LitexSim(Board):
     soc_kwargs = {
         "uart_name"         : "serial",
         "sim_config"        : SimConfig(),
-        "integrated_main_ram_size": 0x10000,
+        "integrated_main_ram_size": 0x1000,
     }
     def __init__(self):
         from litex.tools import litex_sim
@@ -110,8 +111,27 @@ class LitexSim(Board):
             "serial",
             # Storage
             "spiflash",
+            # Bus
+            "i2c",
         })
         self.builder_kwargs["sim_config"] = self.soc_kwargs["sim_config"]
+
+# Verilog Export -----------------------------------------------------------------------------------
+
+class LitexExportVerilog(Board):
+    soc_kwargs = {
+        "integrated_main_ram_size": 0x10000,
+    }
+    def __init__(self):
+        from litex.tools import litex_export_verilog
+        Board.__init__(self, litex_export_verilog.BaseSoC, soc_capabilities={
+            # Communication
+            "serial",
+            # Storage
+            "spiflash",
+            # Bus
+            "i2c",
+        })
 
 #---------------------------------------------------------------------------------------------------
 # Build
@@ -120,6 +140,7 @@ class LitexSim(Board):
 supported_boards = {
     # LiteX
     "litex_sim"                   : LitexSim,
+    "litex_export_verilog"        : LitexExportVerilog,
 
     # Xilinx
     "arty"                        : Arty,
@@ -150,6 +171,7 @@ def main():
     builder_args(parser)
     vivado_build_args(parser)
     oxide_args(parser)
+    export_args(parser)
     args = parser.parse_args()
 
     # Board(s) selection ---------------------------------------------------------------------------
@@ -169,6 +191,7 @@ def main():
         soc_kwargs.update(toolchain=args.toolchain)
         soc_kwargs.update(with_jtagbone=False)
         soc_kwargs.update(spi_flash_init=args.spi_flash_init)
+        soc_kwargs.update(spi_flash_part=args.spi_flash_part)
 
         # SoC parameters ---------------------------------------------------------------------------
         if args.variant is not None:
