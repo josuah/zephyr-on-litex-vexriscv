@@ -102,7 +102,7 @@ class LitexSim(Board):
     soc_kwargs = {
         "uart_name"         : "serial",
         "sim_config"        : SimConfig(),
-        "integrated_main_ram_size": 0x1000,
+        "integrated_main_ram_size": 0x8000,
     }
     def __init__(self):
         from litex.tools import litex_sim
@@ -119,9 +119,6 @@ class LitexSim(Board):
 # Verilog Export -----------------------------------------------------------------------------------
 
 class LitexExportVerilog(Board):
-    soc_kwargs = {
-        "integrated_main_ram_size": 0x10000,
-    }
     def __init__(self):
         from litex.tools import litex_export_verilog
         Board.__init__(self, litex_export_verilog.BaseSoC, soc_capabilities={
@@ -164,6 +161,7 @@ def main():
     parser.add_argument("--load", action="store_true", help="load bitstream (to SRAM). set path to bitstream")
     parser.add_argument("--sys-clk-freq", default=100e6, help="System clock frequency.")
     parser.add_argument("--spi-flash-init", default=None, help="path to the Zephyr image file")
+    parser.add_argument("--ram-init", default=None, help="path to the Zephyr image file")
     parser.add_argument("--spi-data-width", type=int, default=8,      help="SPI data width (maximum transfered bits per xfer)")
     parser.add_argument("--spi-clk-freq",   type=int, default=1e6,    help="SPI clock frequency")
     parser.add_argument("--local-ip", default="192.168.1.50", help="local IP address")
@@ -192,6 +190,7 @@ def main():
         soc_kwargs.update(with_jtagbone=False)
         soc_kwargs.update(spi_flash_init=args.spi_flash_init)
         soc_kwargs.update(spi_flash_part=args.spi_flash_part)
+        soc_kwargs.update(ram_init=args.ram_init)
 
         # SoC parameters ---------------------------------------------------------------------------
         if args.variant is not None:

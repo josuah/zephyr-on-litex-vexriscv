@@ -10,7 +10,7 @@ from litex.soc.cores.i2s import *
 from litex.soc.cores.gpio import *
 from litex.soc.cores.pwm import PWM
 from litex.soc.cores.spi import SPIMaster
-from litex.soc.cores.bitbang import I2CMaster
+from litex.soc.cores.bitbang import I2CMaster, I2CMasterSim
 from litex_boards.platforms import digilent_arty as arty_platform
 from litex.soc.cores.gpio import GPIOOut, GPIOIn
 
@@ -88,7 +88,10 @@ def SoCZephyr(soc_cls, **kwargs):
             setattr(self.submodules, "rgb_led_r0", PWM(getattr(rgb_led_pads, 'r')))
 
         def add_i2c(self):
-            self.submodules.i2c0 = I2CMaster(self.platform.request("i2c", 0))
+            if hasattr(self, "sim_config"):
+                self.submodules.i2c0 = I2CMasterSim(self.platform.request("i2c", 0))
+            else:
+                self.submodules.i2c0 = I2CMaster(self.platform.request("i2c", 0))
 
         def add_i2s(self):
             self.platform.add_extension(arty_platform._i2s_pmod_io)
