@@ -197,8 +197,6 @@ def main():
             soc_kwargs.update(variant=args.variant)
         if args.sys_clk_freq is not None:
             soc_kwargs.update(sys_clk_freq=int(float(args.sys_clk_freq)))
-        if "spiflash" in board.soc_capabilities:
-            soc_kwargs.update(with_spi_flash=True)
 
         # SoC creation -----------------------------------------------------------------------------
         soc = SoCZephyr(board.soc_cls, **soc_kwargs)
@@ -216,6 +214,8 @@ def main():
             soc.add_i2c()
         if "i2s" in board.soc_capabilities:
             soc.add_i2s()
+        if "spiflash" in board.soc_capabilities:
+            soc.add_spi_flash()
 
         if args.build:
             builder = Builder(soc, **builder_argdict(args))

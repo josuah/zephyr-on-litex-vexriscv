@@ -62,6 +62,7 @@ def SoCZephyr(soc_cls, **kwargs):
         mem_map_zephyr = {
             "rom":          0x00000000,
             "sram":         0x01000000,
+            "spiflash":     0x20000000,
             "main_ram":     0x40000000,
             "ethmac":       0xb0000000,
             "i2s_rx":       0xb1000000,
@@ -82,6 +83,10 @@ def SoCZephyr(soc_cls, **kwargs):
         def add_spi(self, data_width, spi_clk_freq):
             spi_pads = self.platform.request("spi", 0)
             self.submodules.spi = SPIMaster(spi_pads, data_width, self.clk_freq, spi_clk_freq)
+
+        def add_spi_flash(self):
+            from litespi.opcodes import SpiNorFlashOpCodes as Codes
+            soc_cls.add_spi_flash(self, mode="4x", module=self.spiflash_module, with_master=False)
 
         def add_rgb_led(self):
             rgb_led_pads = self.platform.request("rgb_led", 0)
